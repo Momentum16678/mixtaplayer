@@ -1,84 +1,110 @@
 import 'dart:convert';
 
-class SignupGetResponse {
-
-  SignupGetResponse({
-    required this.status,
-    required this.token,
-    required this.data,
+class SignupResponse {
+  SignupResponse({
+    this.message,
+    this.token,
   });
 
-  String status;
-  String token;
-  Data data;
+  String? message;
+  String? token;
 
-  factory SignupGetResponse.fromRawJson(String str) =>
-      SignupGetResponse.fromJson(json.decode(str));
+  factory SignupResponse.fromRawJson(String str) =>
+      SignupResponse.fromJson(json.decode(str));
 
   String toRawJson() => json.encode(toJson());
 
-  factory SignupGetResponse.fromJson(Map<String, dynamic> json) =>
-      SignupGetResponse(
-        status: json["status"],
+  factory SignupResponse.fromJson(Map<String, dynamic> json) => SignupResponse(
+        message: json["message"],
         token: json["token"],
-        data: Data.fromJson(json["data"]),
       );
 
   Map<String, dynamic> toJson() => {
-    "status": status,
-    "token": token,
-    "data": data.toJson(),
-  };
+        "message": message,
+        "token": token,
+      };
 }
 
-class Data {
-  Data({
-    required this.user,
-  });
 
-  User user;
+// class SignupGetResponse {
 
-  factory Data.fromRawJson(String str) => Data.fromJson(json.decode(str));
+//   SignupGetResponse({
+//     required this.status,
+//     required this.token,
+//     required this.data,
+//   });
 
-  String toRawJson() => json.encode(toJson());
+//   String status;
+//   String token;
+//   Data data;
 
-  factory Data.fromJson(Map<String, dynamic> json) => Data(
-    user: User.fromJson(json["user"]),
-  );
+//   factory SignupGetResponse.fromRawJson(String str) =>
+//       SignupGetResponse.fromJson(json.decode(str));
 
-  Map<String, dynamic> toJson() => {
-    "user": user.toJson(),
-  };
-}
+//   String toRawJson() => json.encode(toJson());
 
-class User {
-  User({
-    required this.id,
-    required this.email,
-    required this.userName,
-    required this.v,
-  });
+//   factory SignupGetResponse.fromJson(Map<String, dynamic> json) =>
+//       SignupGetResponse(
+//         status: json["status"],
+//         token: json["token"],
+//         data: Data.fromJson(json["data"]),
+//       );
 
-  String id;
-  String email;
-  String userName;
-  int v;
+//   Map<String, dynamic> toJson() => {
+//     "status": status,
+//     "token": token,
+//     "data": data.toJson(),
+//   };
+// }
 
-  factory User.fromRawJson(String str) => User.fromJson(json.decode(str));
+// class Data {
+//   Data({
+//     required this.user,
+//   });
 
-  String toRawJson() => json.encode(toJson());
+//   User user;
 
-  factory User.fromJson(Map<String, dynamic> json) => User(
-    id: json["_id"],
-    email: json["email"],
-    userName: json["username"],
-    v: json["__v"],
-  );
+//   factory Data.fromRawJson(String str) => Data.fromJson(json.decode(str));
 
-  Map<String, dynamic> toJson() => {
-    "_id": id,
-    "email": email,
-    "userName": userName,
-    "__v": v,
-  };
-}
+//   String toRawJson() => json.encode(toJson());
+
+//   factory Data.fromJson(Map<String, dynamic> json) => Data(
+//     user: User.fromJson(json["user"]),
+//   );
+
+//   Map<String, dynamic> toJson() => {
+//     "user": user.toJson(),
+//   };
+// }
+
+// class User {
+//   User({
+//     required this.id,
+//     required this.email,
+//     required this.userName,
+//     required this.v,
+//   });
+
+//   String id;
+//   String email;
+//   String userName;
+//   int v;
+
+//   factory User.fromRawJson(String str) => User.fromJson(json.decode(str));
+
+//   String toRawJson() => json.encode(toJson());
+
+//   factory User.fromJson(Map<String, dynamic> json) => User(
+//     id: json["_id"],
+//     email: json["email"],
+//     userName: json["username"],
+//     v: json["__v"],
+//   );
+
+//   Map<String, dynamic> toJson() => {
+//     "_id": id,
+//     "email": email,
+//     "userName": userName,
+//     "__v": v,
+//   };
+// }
