@@ -19,7 +19,8 @@ class ApiCalls {
         print('working response');
         return SignupResponse.fromJson(data);
       } else {
-        print(response.statusCode);
+        var failedMsg = jsonDecode(response.body);
+        print(failedMsg['message']);
         //print('failed');
       }
     } catch (e) {
