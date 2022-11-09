@@ -229,7 +229,7 @@ class _MusicListState extends State<MusicList> {
               margin: EdgeInsets.only(top: 15),
               padding: EdgeInsets.zero,
               width: MediaQuery.of(context).size.width,
-              decoration: BoxDecoration(color: Colors.white70),
+              // decoration: BoxDecoration(color: Colors.white70),
               height: MediaQuery.of(context).size.height * 0.63,
               child: Container(
                 child: FutureBuilder<List<SongModel>>(
@@ -291,6 +291,36 @@ class _MusicListState extends State<MusicList> {
                                     ),
                                     type: ArtworkType.AUDIO,
                                   ),
+                                  SizedBox(width: 20),
+                                  Expanded(
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          item.data![index].title,
+                                          style: TextStyle(
+                                              fontSize: 15,
+                                              color: Color(0xFF660099),
+                                              fontWeight: FontWeight.w600),
+                                        ),
+                                        SizedBox(height: 2),
+                                        Text(
+                                          item.data![index].artist!,
+                                          style: TextStyle(
+                                              fontSize: 15,
+                                              color: Color(0xFF660099),
+                                              fontWeight: FontWeight.w400),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const Icon(Icons.more_vert),
+                                  SizedBox(
+                                    width: 8,
+                                  )
                                 ]),
                               ),
                             );
