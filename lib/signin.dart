@@ -1,5 +1,14 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:mixtaplayer/api_service.dart';
+import 'package:mixtaplayer/login_response.dart';
+import 'package:mixtaplayer/music_screen.dart';
 import 'package:mixtaplayer/signup.dart';
+import 'package:http/http.dart' as http;
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class SignInScreen extends StatefulWidget {
 
@@ -16,6 +25,24 @@ class _SignInScreenState extends State<SignInScreen> {
   static final emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isObscure = true;
+
+
+  final signupCall = ApiCalls();
+  LoginResponseModel? signInData;
+
+  requestSignIn() async {
+    signInData = await signupCall.Login(
+      emailController.text,
+      _passwordController.text,
+    );
+    if (signInData != null) {
+      Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const MusicScreen()));
+    } else {
+      print(signInData.toString());
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -141,7 +168,8 @@ class _SignInScreenState extends State<SignInScreen> {
                       padding: const EdgeInsets.only(left: 30.0, right: 30),
                       child: GestureDetector(
                         onTap: () async {
-                          if (_formKey.currentState!.validate() == "null") {
+                          if (_formKey.currentState!.validate()) {
+                            await requestSignIn();
                           }
                         },
                         child: Container(
@@ -215,6 +243,7 @@ class _SignInScreenState extends State<SignInScreen> {
                       padding: const EdgeInsets.only(left: 30.0),
                       child: GestureDetector(
                         onTap: () {
+                          signup(context);
                         },
                         child: Container(
                           width: 300,
@@ -252,6 +281,7 @@ class _SignInScreenState extends State<SignInScreen> {
                       padding: const EdgeInsets.only(left: 30.0),
                       child: GestureDetector(
                         onTap: () {
+                          signInWithFacebook();
                         },
                         child: Container(
                           width: 300,
@@ -293,4 +323,71 @@ class _SignInScreenState extends State<SignInScreen> {
       ),
     );
   }
+
+  void signInWithFacebook() async {
+
+    try {
+      final LoginResult result = await FacebookAuth.instance
+          .login(permissions: (['email', 'public_profile']));
+      final token = result.accessToken!.token;
+      print(
+          'Facebook token userID : ${result.accessToken!.grantedPermissions}');
+      final graphResponse = await http.get(Uri.parse(
+          'https://graph.facebook.com/'
+              'v2.12/me?fields=name,first_name,last_name,email&access_token=${token}'));
+
+      final profile = jsonDecode(graphResponse.body);
+      print("Profile is equal to $profile");
+      try {
+        final AuthCredential facebookCredential =
+        FacebookAuthProvider.credential(result.accessToken!.token);
+        final userCredential = await FirebaseAuth.instance
+            .signInWithCredential(facebookCredential);
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const MusicScreen()),
+        );
+      } catch (e) {
+        final snackBar = SnackBar(
+          margin: const EdgeInsets.all(20),
+          behavior: SnackBarBehavior.floating,
+          content: Text(e.toString()),
+          backgroundColor: Color.fromRGBO(65, 164, 255, 0.75),
+          action: SnackBarAction(
+            label: 'dismiss',
+            onPressed: () {},
+          ),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      }
+    } catch (e) {
+      print("error occurred");
+      print(e.toString());
+    }
+  }
+
+  final GoogleSignIn googleSignIn = GoogleSignIn();
+
+  Future<void> signup(BuildContext context) async {
+    final FirebaseAuth auth = FirebaseAuth.instance;
+
+    final GoogleSignInAccount? googleSignInAccount = await googleSignIn.signIn();
+    if (googleSignInAccount != null) {
+      final GoogleSignInAuthentication googleSignInAuthentication =
+      await googleSignInAccount.authentication;
+      final AuthCredential authCredential = GoogleAuthProvider.credential(
+          idToken: googleSignInAuthentication.idToken,
+          accessToken: googleSignInAuthentication.accessToken);
+
+      // Getting users credential
+      UserCredential result = await auth.signInWithCredential(authCredential);
+
+      if (result != null) {
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (context) => const MusicScreen()));
+      } // if result not null we simply call the MaterialpageRoute,
+      // for go to the HomePage screen
+    }
+  }
+
 }
