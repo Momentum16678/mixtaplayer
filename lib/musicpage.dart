@@ -282,6 +282,9 @@ class _MusicListState extends State<MusicList> {
                                 ),
                                 child: Row(children: [
                                   QueryArtworkWidget(
+                                    artworkBorder: BorderRadius.zero,
+                                    artworkWidth: 100,
+                                    artworkHeight: 50,
                                     id: item.data![index].id,
                                     nullArtworkWidget: Image.asset(
                                       "assets/images/2pac.jpg",
