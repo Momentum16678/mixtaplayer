@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:mixtaplayer/musicpage.dart';
 import 'package:mixtaplayer/signin.dart';
 import 'package:mixtaplayer/signup.dart';
 
@@ -33,7 +34,7 @@ class _MyHomePageState extends State<MyHomePage> {
     Timer(
         const Duration(seconds: 3),
         () => Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (context) => const SignUpScreen())));
+            MaterialPageRoute(builder: (context) => const MusicList())));
   }
 
   @override
