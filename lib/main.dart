@@ -1,10 +1,12 @@
 import 'dart:async';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:mixtaplayer/signin.dart';
 import 'package:mixtaplayer/signup.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+Future<void> main() async {
+   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   runApp(const MyApp());
 }
@@ -28,13 +30,21 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+
+  Future<void> startApp() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var email = prefs.getString("email");
+    print(email);
+    Timer(
+        const Duration(seconds: 3),
+            () => Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) => email == null ? const SignUpScreen() : const SignInScreen())));
+  }
+
   @override
   void initState() {
     super.initState();
-    Timer(
-        const Duration(seconds: 3),
-        () => Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (context) => const SignUpScreen())));
+    startApp();
   }
 
   @override
@@ -54,7 +64,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ])),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
+          children: const [
             Text(
               "Mixtaplay",
               style: TextStyle(

@@ -1,14 +1,12 @@
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:mixtaplayer/api_service.dart';
 import 'package:mixtaplayer/login_response.dart';
-import 'package:mixtaplayer/music_screen.dart';
+import 'package:mixtaplayer/musiclist.dart';
 import 'package:mixtaplayer/signup.dart';
-import 'package:http/http.dart' as http;
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SignInScreen extends StatefulWidget {
 
@@ -38,7 +36,7 @@ class _SignInScreenState extends State<SignInScreen> {
     if (signInData != null) {
       Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const MusicScreen()));
+          MaterialPageRoute(builder: (context) => const MusicList()));
     } else {
       print(signInData.toString());
     }
@@ -170,6 +168,8 @@ class _SignInScreenState extends State<SignInScreen> {
                         onTap: () async {
                           if (_formKey.currentState!.validate()) {
                             await requestSignIn();
+                            //SharedPreferences prefs = await SharedPreferences.getInstance();
+                            //prefs.setString("email", "useremail@email.com");
                           }
                         },
                         child: Container(
@@ -277,43 +277,6 @@ class _SignInScreenState extends State<SignInScreen> {
                       ),
                     ),
                     const SizedBox(height: 10,),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 30.0),
-                      child: GestureDetector(
-                        onTap: () {
-                          signInWithFacebook();
-                        },
-                        child: Container(
-                          width: 300,
-                          height: 50,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(color: Color.fromRGBO(102, 0, 153, 1)
-                              )
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.only(left: 58.0),
-                            child: Row(
-                              children: [
-                                Image.asset("assets/images/fb_icon.jpg",
-                                  height: 20,
-                                  width: 20,
-                                ),
-                                const SizedBox(width: 10,),
-                                Text(
-                                  "Sign up with facebook",
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w500,
-                                      color: Colors.white
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
                   ],
                 ),
               )
@@ -322,48 +285,6 @@ class _SignInScreenState extends State<SignInScreen> {
         ),
       ),
     );
-  }
-
-  void signInWithFacebook() async {
-
-    try {
-      final LoginResult result = await FacebookAuth.instance
-          .login(permissions: (['email', 'public_profile']));
-      final token = result.accessToken!.token;
-      print(
-          'Facebook token userID : ${result.accessToken!.grantedPermissions}');
-      final graphResponse = await http.get(Uri.parse(
-          'https://graph.facebook.com/'
-              'v2.12/me?fields=name,first_name,last_name,email&access_token=${token}'));
-
-      final profile = jsonDecode(graphResponse.body);
-      print("Profile is equal to $profile");
-      try {
-        final AuthCredential facebookCredential =
-        FacebookAuthProvider.credential(result.accessToken!.token);
-        final userCredential = await FirebaseAuth.instance
-            .signInWithCredential(facebookCredential);
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const MusicScreen()),
-        );
-      } catch (e) {
-        final snackBar = SnackBar(
-          margin: const EdgeInsets.all(20),
-          behavior: SnackBarBehavior.floating,
-          content: Text(e.toString()),
-          backgroundColor: Color.fromRGBO(65, 164, 255, 0.75),
-          action: SnackBarAction(
-            label: 'dismiss',
-            onPressed: () {},
-          ),
-        );
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
-      }
-    } catch (e) {
-      print("error occurred");
-      print(e.toString());
-    }
   }
 
   final GoogleSignIn googleSignIn = GoogleSignIn();
@@ -384,7 +305,7 @@ class _SignInScreenState extends State<SignInScreen> {
 
       if (result != null) {
         Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => const MusicScreen()));
+            context, MaterialPageRoute(builder: (context) => const MusicList()));
       } // if result not null we simply call the MaterialpageRoute,
       // for go to the HomePage screen
     }
