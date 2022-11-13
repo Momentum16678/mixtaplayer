@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:mixtaplayer/api_service.dart';
+import 'package:mixtaplayer/dialog_helper/dialog_helper.dart';
 import 'package:mixtaplayer/login_response.dart';
 import 'package:mixtaplayer/musiclist.dart';
 import 'package:mixtaplayer/signup.dart';
@@ -31,6 +32,8 @@ class _SignInScreenState extends State<SignInScreen> {
       _passwordController.text,
     );
     if (signInData != null) {
+      _passwordController.clear();
+      DialogHelper.hideLoading();
       Navigator.push(
           context, MaterialPageRoute(builder: (context) => const MusicList()));
     } else {
@@ -169,6 +172,7 @@ class _SignInScreenState extends State<SignInScreen> {
                       child: GestureDetector(
                         onTap: () async {
                           if (_formKey.currentState!.validate()) {
+                            DialogHelper.showLoading("Login in");
                             await requestSignIn();
                             //SharedPreferences prefs = await SharedPreferences.getInstance();
                             //prefs.setString("email", "useremail@email.com");
