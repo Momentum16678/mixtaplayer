@@ -122,7 +122,7 @@ class _MusicListState extends State<MusicList> {
       onWillPop: () => _onWillPop(context),
       child: Scaffold(
         body: Container(
-          padding: EdgeInsets.only(top: 30, left: 20, right: 20),
+          padding: EdgeInsets.only(top: 30, left: 8, right: 8),
           decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topCenter,
@@ -217,144 +217,149 @@ class _MusicListState extends State<MusicList> {
                 //     ],
                 //   ),
                 // ),
-                Container(
-                  // margin: EdgeInsets.only(top: 8),
-                  padding: EdgeInsets.zero,
-                  width: MediaQuery.of(context).size.width,
-                  // decoration: BoxDecoration(color: Colors.white70),
-                  height: MediaQuery.of(context).size.height * 0.76,
-                  child: FutureBuilder<List<SongModel>>(
-                    future: _audioQuery.querySongs(
-                      sortType: null,
-                      orderType: OrderType.ASC_OR_SMALLER,
-                      ignoreCase: true,
-                      uriType: UriType.EXTERNAL,
-                    ),
-                    builder: (context, item) {
-                      if (item.data == null) {
-                        return const CircularProgressIndicator();
-                      }
-                      if (item.data!.isEmpty) {
-                        return const Center(child: Text("No songs found"));
-                      }
-                      return Column(
-                        children: [
-                          Container(
-                            // margin: EdgeInsets.only(top: 15),
-                            height: 30,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                Icon(
-                                  Icons.headphones,
-                                  color: Colors.white,
-                                ),
-                                SizedBox(width: 5),
-                                Text(
-                                  "45 mins . ${item.data!.length} songs",
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 16),
-                                ),
-                              ],
+                Expanded(
+                  child: Container(
+                    // margin: EdgeInsets.only(top: 8),
+                    padding: EdgeInsets.zero,
+                    width: MediaQuery.of(context).size.width,
+                    // decoration: BoxDecoration(color: Colors.white70),
+                    height: MediaQuery.of(context).size.height * 0.76,
+                    child: FutureBuilder<List<SongModel>>(
+                      future: _audioQuery.querySongs(
+                        sortType: null,
+                        orderType: OrderType.ASC_OR_SMALLER,
+                        ignoreCase: true,
+                        uriType: UriType.EXTERNAL,
+                      ),
+                      builder: (context, item) {
+                        if (item.data == null) {
+                          return const CircularProgressIndicator();
+                        }
+                        if (item.data!.isEmpty) {
+                          return const Center(child: Text("No songs found"));
+                        }
+                        return Column(
+                          children: [
+                            Container(
+                              // margin: EdgeInsets.only(top: 15),
+                              height: 30,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  Icon(
+                                    Icons.headphones,
+                                    color: Colors.white,
+                                  ),
+                                  SizedBox(width: 5),
+                                  Text(
+                                    "45 mins . ${item.data!.length} songs",
+                                    style: TextStyle(
+                                        color: Colors.white, fontSize: 16),
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                          SizedBox(height: 10),
-                          Expanded(
-                            child: ListView.builder(
-                                padding: EdgeInsets.zero,
-                                itemCount: item.data!.length,
-                                itemBuilder: (context, index) {
-                                  if ((item.data![index].fileExtension ==
-                                          'mp3') &&
-                                      (item.data![index].duration! > 600)) {
-                                    newIndex = item.data![index];
-                                    return GestureDetector(
-                                      onTap: () {
-                                        // print(item.data![index].albumId);
-                                        print(
-                                            MediaQuery.of(context).size.height);
-                                      },
-                                      // child: ListTile(
-                                      //   tileColor: Colors.white,
-                                      //   title: Text(item.data![index].title),
-                                      //   subtitle: Text(item.data![index].artist!),
-                                      //   trailing: const Icon(Icons.more_vert),
-                                      //   leading: QueryArtworkWidget(
-                                      //     id: item.data![index].id,
-                                      //     nullArtworkWidget: Image.asset(
-                                      //       "assets/images/2pac.jpg",
-                                      //       fit: BoxFit.cover,
-                                      //       width: 50,
-                                      //       height: 50,
-                                      //     ),
-                                      //     type: ArtworkType.AUDIO,
-                                      //   ),
-                                      // ),
-                                      child: Container(
-                                        decoration:
-                                            BoxDecoration(color: Colors.white),
-                                        height: 90,
-                                        margin: EdgeInsets.only(bottom: 2),
-                                        padding: EdgeInsets.only(
-                                          left: 10,
+                            SizedBox(height: 10),
+                            Expanded(
+                              child: ListView.builder(
+                                  padding: EdgeInsets.zero,
+                                  itemCount: item.data!.length,
+                                  itemBuilder: (context, index) {
+                                    if ((item.data![index].fileExtension ==
+                                            'mp3') &&
+                                        (item.data![index].duration! > 600)) {
+                                      newIndex = item.data![index];
+                                      return GestureDetector(
+                                        onTap: () {
+                                          // print(item.data![index].albumId);
+                                          print(MediaQuery.of(context)
+                                              .size
+                                              .height);
+                                        },
+                                        // child: ListTile(
+                                        //   tileColor: Colors.white,
+                                        //   title: Text(item.data![index].title),
+                                        //   subtitle: Text(item.data![index].artist!),
+                                        //   trailing: const Icon(Icons.more_vert),
+                                        //   leading: QueryArtworkWidget(
+                                        //     id: item.data![index].id,
+                                        //     nullArtworkWidget: Image.asset(
+                                        //       "assets/images/2pac.jpg",
+                                        //       fit: BoxFit.cover,
+                                        //       width: 50,
+                                        //       height: 50,
+                                        //     ),
+                                        //     type: ArtworkType.AUDIO,
+                                        //   ),
+                                        // ),
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                              color: Colors.white),
+                                          height: 90,
+                                          margin: EdgeInsets.only(bottom: 2),
+                                          padding: EdgeInsets.only(
+                                            left: 10,
+                                          ),
+                                          child: Row(children: [
+                                            QueryArtworkWidget(
+                                              artworkBorder: BorderRadius.zero,
+                                              artworkWidth: 100,
+                                              artworkHeight: 75,
+                                              id: item.data![index].id,
+                                              nullArtworkWidget: Image.asset(
+                                                "assets/images/fb_icon.jpg",
+                                                fit: BoxFit.cover,
+                                                width: 50,
+                                                height: 50,
+                                              ),
+                                              type: ArtworkType.AUDIO,
+                                            ),
+                                            SizedBox(width: 20),
+                                            Expanded(
+                                              child: Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    item.data![index].title,
+                                                    style: TextStyle(
+                                                        fontSize: 18,
+                                                        color:
+                                                            Color(0xFF660099),
+                                                        fontWeight:
+                                                            FontWeight.w600),
+                                                  ),
+                                                  SizedBox(height: 2),
+                                                  Text(
+                                                    item.data![index].artist!,
+                                                    style: TextStyle(
+                                                        fontSize: 16,
+                                                        color:
+                                                            Color(0xFF660099),
+                                                        fontWeight:
+                                                            FontWeight.w400),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            const Icon(Icons.more_vert),
+                                            SizedBox(
+                                              width: 8,
+                                            )
+                                          ]),
                                         ),
-                                        child: Row(children: [
-                                          QueryArtworkWidget(
-                                            artworkBorder: BorderRadius.zero,
-                                            artworkWidth: 100,
-                                            artworkHeight: 75,
-                                            id: item.data![index].id,
-                                            nullArtworkWidget: Image.asset(
-                                              "assets/images/fb_icon.jpg",
-                                              fit: BoxFit.cover,
-                                              width: 50,
-                                              height: 50,
-                                            ),
-                                            type: ArtworkType.AUDIO,
-                                          ),
-                                          SizedBox(width: 20),
-                                          Expanded(
-                                            child: Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  item.data![index].title,
-                                                  style: TextStyle(
-                                                      fontSize: 18,
-                                                      color: Color(0xFF660099),
-                                                      fontWeight:
-                                                          FontWeight.w600),
-                                                ),
-                                                SizedBox(height: 2),
-                                                Text(
-                                                  item.data![index].artist!,
-                                                  style: TextStyle(
-                                                      fontSize: 16,
-                                                      color: Color(0xFF660099),
-                                                      fontWeight:
-                                                          FontWeight.w400),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                          const Icon(Icons.more_vert),
-                                          SizedBox(
-                                            width: 8,
-                                          )
-                                        ]),
-                                      ),
-                                    );
-                                  }
-                                  return Container();
-                                }),
-                          ),
-                        ],
-                      );
-                    },
+                                      );
+                                    }
+                                    return Container();
+                                  }),
+                            ),
+                          ],
+                        );
+                      },
+                    ),
                   ),
                 )
               ],
