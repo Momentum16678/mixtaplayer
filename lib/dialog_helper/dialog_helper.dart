@@ -20,7 +20,7 @@ class DialogHelper {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   CircularProgressIndicator(
-                    color: Color(0xFFAB35BF),
+                    color: Color(0xFF310248),
                   ),
                   SizedBox(height: 8),
                   Text(message ?? 'Logging in...'),
@@ -31,5 +31,9 @@ class DialogHelper {
         ),
       ),
     );
+  }
+
+  static void hideLoading() {
+    if (Get.isDialogOpen!) Get.back();
   }
 }

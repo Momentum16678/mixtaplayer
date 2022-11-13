@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:mixtaplayer/login_response.dart';
 import 'package:mixtaplayer/signup_response.dart';
@@ -44,8 +45,10 @@ class ApiCalls {
         print('working response');
         return LoginResponseModel.fromJson(data);
       } else {
+
         var failedMsg = jsonDecode(response.body);
         print(failedMsg['message']);
+        Get.back;
         //print('failed');
       }
     } catch (e) {
