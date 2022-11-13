@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously, prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:mixtaplayer/api_service.dart';
 import 'package:mixtaplayer/dialog_helper/dialog_helper.dart';
 import 'package:mixtaplayer/login_response.dart';
@@ -33,11 +34,14 @@ class _SignInScreenState extends State<SignInScreen> {
     );
     if (signInData != null) {
       _passwordController.clear();
+      //we call hidedialog here to remove the existing loading screen
+      //so that when we log out, it will no longer be there
       DialogHelper.hideLoading();
       Navigator.push(
           context, MaterialPageRoute(builder: (context) => const MusicList()));
     } else {
       print(signInData.toString());
+      DialogHelper.hideLoading();
     }
   }
 
@@ -172,6 +176,9 @@ class _SignInScreenState extends State<SignInScreen> {
                       child: GestureDetector(
                         onTap: () async {
                           if (_formKey.currentState!.validate()) {
+                            //We call the loading dialog here immediately we press sign in
+                            //this will be showing while the api work in the backgroud to
+                            //sign in
                             DialogHelper.showLoading("Login in");
                             await requestSignIn();
                             //SharedPreferences prefs = await SharedPreferences.getInstance();
