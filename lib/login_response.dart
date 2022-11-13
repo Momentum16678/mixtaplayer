@@ -2,12 +2,12 @@ import 'dart:convert';
 
 class LoginResponseModel {
   LoginResponseModel({
-    required this.status,
-    required this.token,
+    this.status,
+    this.token,
   });
 
-  String status;
-  String token;
+  String? status;
+  String? token;
 
   factory LoginResponseModel.fromRawJson(String str) =>
       LoginResponseModel.fromJson(json.decode(str));
@@ -21,7 +21,7 @@ class LoginResponseModel {
       );
 
   Map<String, dynamic> toJson() => {
-    "status": status,
-    "token": token,
-  };
+        "status": status,
+        "token": token,
+      };
 }

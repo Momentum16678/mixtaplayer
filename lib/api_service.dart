@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:mixtaplayer/login_response.dart';
 import 'package:mixtaplayer/signup_response.dart';
 
 class ApiCalls {
@@ -28,8 +29,7 @@ class ApiCalls {
     }
   }
 
-
-  Future Login(String email, String password) async {
+  Future login(String email, String password) async {
     try {
       final url = Uri.parse("https://mixtaplay.herokuapp.com/users/login");
       final response = await http.post(url,
@@ -42,7 +42,7 @@ class ApiCalls {
         var data = jsonDecode(response.body);
         print(data['token']);
         print('working response');
-        return SignupResponse.fromJson(data);
+        return LoginResponseModel.fromJson(data);
       } else {
         var failedMsg = jsonDecode(response.body);
         print(failedMsg['message']);
