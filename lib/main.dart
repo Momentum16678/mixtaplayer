@@ -6,7 +6,7 @@ import 'package:mixtaplayer/signup.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> main() async {
-   WidgetsFlutterBinding.ensureInitialized();
+  WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   runApp(const MyApp());
 }
@@ -30,15 +30,18 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-
   Future<void> startApp() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var email = prefs.getString("email");
     print(email);
     Timer(
         const Duration(seconds: 3),
-            () => Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (context) => email == null ? const SignUpScreen() : const SignInScreen())));
+        () => Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+                builder: (context) => email == null
+                    ? const SignUpScreen()
+                    : const SignInScreen())));
   }
 
   @override
@@ -53,7 +56,7 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Container(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
             gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
