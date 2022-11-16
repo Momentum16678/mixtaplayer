@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:mixtaplayer/music_player.dart';
 import 'package:mixtaplayer/signin.dart';
 import 'package:mixtaplayer/signup.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -55,9 +56,13 @@ class _MyHomePageState extends State<MyHomePage> {
         () => Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-                builder: (context) => email == null
-                    ? const SignUpScreen()
-                    : const SignInScreen())));
+                builder: (context) =>
+             //    email == null
+              //    ? const
+                  SignUpScreen()
+                 //   : const SignInScreen()
+            )
+        ));
   }
 
   @override

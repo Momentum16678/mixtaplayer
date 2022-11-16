@@ -1,9 +1,9 @@
 // ignore_for_file: use_build_context_synchronously, prefer_const_constructors, prefer_const_literals_to_create_immutables
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mixtaplayer/api_service.dart';
 import 'package:mixtaplayer/dialog_helper/dialog_helper.dart';
+import 'package:mixtaplayer/forgot_password.dart';
 import 'package:mixtaplayer/login_response.dart';
 import 'package:mixtaplayer/musiclist.dart';
 import 'package:mixtaplayer/signup.dart';
@@ -44,6 +44,20 @@ class _SignInScreenState extends State<SignInScreen> {
       DialogHelper.hideLoading();
     }
   }
+
+  GoogleSignInAccount? _currentUser;
+
+  @override
+  void initState() {
+    googleSignIn.onCurrentUserChanged.listen((account) {
+      setState(() {
+        _currentUser == account;
+      });
+    });
+    googleSignIn.signInSilently();
+    super.initState();
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -166,6 +180,30 @@ class _SignInScreenState extends State<SignInScreen> {
                           }
                         },
                         controller: _passwordController,
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    GestureDetector(
+                      onTap: (){
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => const ForgotPassword()));
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(right: 30.0),
+                            child: const Text(
+                              "Forgot Password?",
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.white),
+                              textAlign: TextAlign.start,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     const SizedBox(

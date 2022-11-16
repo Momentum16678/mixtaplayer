@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
-import 'dart:io';
 import 'package:flutter_audio_query/flutter_audio_query.dart';
+import 'dart:io';
 import 'package:just_audio/just_audio.dart';
-
+import 'package:on_audio_query/on_audio_query.dart';
 
 class MusicPlayer extends StatefulWidget {
   SongInfo songInfo;
   Function changeTrack;
   @override
   final GlobalKey<_MusicPlayerState> key;
-  MusicPlayer({required this.songInfo,required this.changeTrack,required this.key}):super(key: key);
+  MusicPlayer({required this.songInfo,
+    required this.changeTrack,required this.key}):super(key: key);
 
   @override
   State<MusicPlayer> createState() => _MusicPlayerState();
@@ -80,6 +81,15 @@ class _MusicPlayerState extends State<MusicPlayer> {
         title: Text('Now Playing', style: TextStyle(color: Colors.black)),
       ),
       body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Color(0xFF0E0116), Color(0xFF300347), Color(0xFF0E0116)],
+          ),
+        ),
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height,
         margin: EdgeInsets.fromLTRB(5, 57, 5, 0),
         child: Column(children: <Widget>[
           CircleAvatar(
