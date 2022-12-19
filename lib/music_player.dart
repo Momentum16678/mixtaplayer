@@ -1,84 +1,66 @@
+import 'dart:developer';
 import 'package:flutter/material.dart';
-import 'package:flutter_audio_query/flutter_audio_query.dart';
-import 'dart:io';
 import 'package:just_audio/just_audio.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 
 class MusicPlayer extends StatefulWidget {
-  SongInfo songInfo;
-  Function changeTrack;
+  final SongModel songModel;
+  final AudioPlayer audioPlayer;
   @override
-  final GlobalKey<_MusicPlayerState> key;
-  MusicPlayer({required this.songInfo,
-    required this.changeTrack,required this.key}):super(key: key);
+  const MusicPlayer(
+      {super.key, required this.songModel, required this.audioPlayer});
 
   @override
   State<MusicPlayer> createState() => _MusicPlayerState();
 }
 
 class _MusicPlayerState extends State<MusicPlayer> {
-  double minimumValue=0.0, maximumValue=0.0, currentValue=0.0;
-  String currentTime='', endTime='';
-  bool isPlaying=false;
-  final AudioPlayer player = AudioPlayer();
+  Duration _duration = const Duration();
+  Duration _position = const Duration();
+  bool _isPlaying = false;
+  //final AudioPlayer _audioPlayer = AudioPlayer();
 
   @override
-  void initState()  {
+  void initState() {
     super.initState();
-    setSong(widget.songInfo);
+    playSong();
   }
-  @override
-  void dispose()  {
-    super.dispose();
-    player.dispose();
-  }
-  void setSong(SongInfo songInfo) async {
-    widget.songInfo=songInfo;
-    await player.setUrl(widget.songInfo.uri);
-    currentValue=minimumValue;
-    maximumValue=player.duration!.inMilliseconds.toDouble();
-    setState(() {
-      currentTime=getDuration(currentValue);
-      endTime=getDuration(maximumValue);
-    });
-    isPlaying=false;
-    changeStatus();
-    player.positionStream.listen((duration) {
-      currentValue=duration.inMilliseconds.toDouble();
+
+  void playSong() {
+    try {
+      widget.audioPlayer
+          .setAudioSource(AudioSource.uri(Uri.parse(widget.songModel.uri!)));
+      widget.audioPlayer.play();
+      _isPlaying = true;
+    } on Exception {
+      log("Cannot parse song");
+    }
+    widget.audioPlayer.durationStream.listen((d) {
       setState(() {
-        currentTime=getDuration(currentValue);
+        _duration = d!;
+      });
+    });
+    widget.audioPlayer.positionStream.listen((p) {
+      setState(() {
+        _position = p;
       });
     });
   }
-  void changeStatus() {
-    setState(() {
-      isPlaying=!isPlaying;
-    });
-    if(isPlaying) {
-      player.play();
-    } else  {
-      player.pause();
-    }
-  }
-  String getDuration(double value)  {
-    Duration duration=Duration(milliseconds: value.round());
-
-    return [duration.inMinutes, duration.inSeconds].map((element)=>element.remainder(60).toString().padLeft(2, '0')).join(':');
-  }
-
-
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Color(0xFF0E0116),
         leading: IconButton(
             onPressed: () {
               Navigator.of(context).pop();
             },
-            icon: Icon(Icons.arrow_back_ios_sharp, color: Colors.black)),
-        title: Text('Now Playing', style: TextStyle(color: Colors.black)),
+            icon: Icon(Icons.arrow_back_ios_sharp, color: Colors.white)),
+        title: Text(
+             'Now Playing',
+             style: TextStyle(color: Colors.white)
+        ),
       ),
       body: Container(
         decoration: BoxDecoration(
@@ -90,101 +72,126 @@ class _MusicPlayerState extends State<MusicPlayer> {
         ),
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
-        margin: EdgeInsets.fromLTRB(5, 57, 5, 0),
         child: Column(children: <Widget>[
+          SizedBox(height: 50,),
           CircleAvatar(
-            backgroundImage: widget.songInfo.albumArtwork == null
-                ? AssetImage('assets/images/music_gradient.jpg') as ImageProvider
-                : FileImage(File(widget.songInfo.albumArtwork)),
-            radius: 75,
+            radius: 100.0,
+            child: Icon(
+              Icons.music_note,
+              size: 60.0,
+            ),
+            // backgroundImage: widget.songModel.album == null
+            //   ? AssetImage('assets/images/music_gradient.jpg') as ImageProvider
+            // : FileImage(File(widget.songModel.displayName)),
+            // radius: 75,
+          ),
+          const SizedBox(
+            height: 30,
           ),
           Container(
             margin: EdgeInsets.fromLTRB(0, 20, 0, 0),
             child: Text(
-              widget.songInfo.title,
+              widget.songModel.displayNameWOExt,
+              overflow: TextOverflow.fade,
+              maxLines: 3,
               style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 14.0,
-                  fontWeight: FontWeight.w600),
+                  color: Colors.white,
+                  fontSize: 15.0,
+                  fontWeight: FontWeight.bold
+              ),
             ),
+          ),
+          const SizedBox(
+            height: 10,
           ),
           Container(
             margin: EdgeInsets.fromLTRB(0, 0, 0, 33),
             child: Text(
-              widget.songInfo.artist,
+              widget.songModel.artist.toString() == "unknown"
+                  ? "Unknown Artist"
+                  : widget.songModel.artist.toString(),
               style: TextStyle(
-                  color: Colors.grey,
-                  fontSize: 12.0,
+                  color: Colors.white,
+                  fontSize: 15.0,
                   fontWeight: FontWeight.w500),
             ),
           ),
-          Slider(
-            inactiveColor: Colors.black12,
-            activeColor: Colors.black,
-            min: minimumValue,
-            max: maximumValue,
-            value: currentValue,
-            onChanged: (value) {
-              currentValue = value;
-              player.seek(Duration(milliseconds: currentValue.round()));
-            },
+          const SizedBox(
+            height: 10,
           ),
           Container(
-            transform: Matrix4.translationValues(0, -15, 0),
-            margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
+            margin: EdgeInsets.fromLTRB(10, 10, 10, 2),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(currentTime,
-                    style: TextStyle(
-                        color: Colors.grey,
-                        fontSize: 12.5,
-                        fontWeight: FontWeight.w500)),
-                Text(endTime,
-                    style: TextStyle(
-                        color: Colors.grey,
-                        fontSize: 12.5,
-                        fontWeight: FontWeight.w500))
-              ],
+                Text(
+                  _position.toString().split(".")[0],
+                    style: TextStyle(color: Colors.white)
+                ),
+                Expanded(
+                  child: Slider(
+                    min: const Duration(microseconds: 0).inSeconds.toDouble(),
+                    value: _position.inSeconds.toDouble(),
+                    max: _duration.inSeconds.toDouble(),
+                    onChanged: (value) {
+                      setState(() {
+                        changeToSeconds(value.toInt());
+                        value = value;
+                      });
+                    },
+                  ),
+                ),
+                Text(
+                  style: TextStyle(color: Colors.white),
+                  _duration.toString().split(".")[0]
+                ),
+              ]
             ),
           ),
-          Container(
-            margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                GestureDetector(
-                  behavior: HitTestBehavior.translucent,
-                  onTap: () {
-                    widget.changeTrack(false);
-                  },
-                  child:
-                      Icon(Icons.skip_previous, color: Colors.black, size: 55),
-                ),
-                GestureDetector(
-                  behavior: HitTestBehavior.translucent,
-                  onTap: () {
-                    changeStatus();
-                  },
-                  child: Icon(
-                      isPlaying
-                          ? Icons.pause_circle_filled_rounded
-                          : Icons.play_circle_fill_rounded,
-                      color: Colors.black,
-                      size: 85),
-                ),
-                GestureDetector(
-                  behavior: HitTestBehavior.translucent,
-                  onTap: () {
-                    widget.changeTrack(true);
-                  },
-                  child: Icon(Icons.skip_next, color: Colors.black, size: 55),
-                ),
-              ],
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              IconButton(onPressed: (){},
+                  icon: Icon(
+                      Icons.skip_previous,
+                      size: 55,
+                      color: Colors.white,
+                  )
+              ),
+              IconButton(
+                onPressed: () {
+                  setState(() {
+                    if (_isPlaying) {
+                      widget.audioPlayer.pause();
+                    } else {
+                      widget.audioPlayer.play();
+                    }
+                    _isPlaying = !_isPlaying;
+                  });
+                },
+                icon: Icon(
+                    _isPlaying
+                        ? Icons.pause_circle_filled_rounded
+                        : Icons.play_circle_fill_rounded,
+                    color: Colors.white,
+                    size: 55),
+              ),
+              IconButton(onPressed: (){},
+                  icon: Icon(
+                    Icons.skip_next,
+                    size: 55,
+                    color: Colors.white,
+                  )
+              ),
+            ],
           ),
         ]),
       ),
     );
   }
+
+  void changeToSeconds(int seconds){
+    Duration duration = Duration(seconds: seconds);
+    widget.audioPlayer.seek(duration);
+  }
+  
 }

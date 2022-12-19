@@ -1,7 +1,10 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
 
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:just_audio/just_audio.dart';
+import 'package:mixtaplayer/music_player.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 
 class MusicList extends StatefulWidget {
@@ -12,6 +15,17 @@ class MusicList extends StatefulWidget {
 }
 
 class _MusicListState extends State<MusicList> {
+
+  //To play the song
+  playSong(String? uri){
+    try {
+      _audioPlayer.setAudioSource(AudioSource.uri(Uri.parse(uri!)));
+      _audioPlayer.play();
+    } on Exception {
+      print("Error parsing songs");
+    }
+
+  }
   //WillPopScope
   //This is the method used to avoid taking user back to login when they press back button
   //
@@ -108,6 +122,7 @@ class _MusicListState extends State<MusicList> {
   }
 
   final OnAudioQuery _audioQuery = OnAudioQuery();
+  final AudioPlayer _audioPlayer = AudioPlayer();
   @override
   void initState() {
     super.initState();
@@ -137,17 +152,63 @@ class _MusicListState extends State<MusicList> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Center(
+                  child: Text(
+                    "Mixtaplayer",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16),
+                  ),
+                ),
                 // Image.asset(
                 //"assets/images/logo.png",
                 // width: 100,
                 //height: 40,
                 //),
                 Container(
-                  padding: EdgeInsets.only(top: 30),
+                  padding: EdgeInsets.only(top: 10),
                   child: Row(
                     children: [
-                      Expanded(
-                        child: Container(
+                      GestureDetector(
+                        onTap: () async {
+                          await _audioPlayer.play();
+                        },
+                        child: Expanded(
+                          child: Container(
+                               width: 150,
+                              decoration: BoxDecoration(
+                                color: Color(0xFF660099),
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                              height: 45,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.play_arrow,
+                                    color: Colors.white,
+                                    size: 32,
+                                  ),
+                                  SizedBox(width: 8),
+                                  Text(
+                                    "Play all",
+                                    style: TextStyle(
+                                        color: Colors.white, fontSize: 16),
+                                  )
+                                ],
+                              )),
+                        ),
+                      ),
+                      SizedBox(width: 30),
+                      GestureDetector(
+                        onTap: () async {
+                          await _audioPlayer.shuffle();
+                        },
+                        child: Expanded(
+                          child: Container(
+                            width: 150,
                             decoration: BoxDecoration(
                               color: Color(0xFF660099),
                               borderRadius: BorderRadius.circular(30),
@@ -157,42 +218,18 @@ class _MusicListState extends State<MusicList> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Icon(
-                                  Icons.play_arrow,
+                                  Icons.shuffle_rounded,
                                   color: Colors.white,
-                                  size: 32,
+                                  size: 28,
                                 ),
-                                SizedBox(width: 8),
+                                SizedBox(width: 5),
                                 Text(
-                                  "Play all",
+                                  "Shuffle all",
                                   style: TextStyle(
                                       color: Colors.white, fontSize: 16),
                                 )
                               ],
-                            )),
-                      ),
-                      SizedBox(width: 20),
-                      Expanded(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Color(0xFF660099),
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                          height: 45,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.shuffle_rounded,
-                                color: Colors.white,
-                                size: 28,
-                              ),
-                              SizedBox(width: 5),
-                              Text(
-                                "Shuffle all",
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 16),
-                              )
-                            ],
+                            ),
                           ),
                         ),
                       ),
@@ -241,7 +278,7 @@ class _MusicListState extends State<MusicList> {
                         return Column(
                           children: [
                             Container(
-                              // margin: EdgeInsets.only(top: 15),
+                               margin: EdgeInsets.only(top: 5),
                               height: 30,
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.start,
@@ -260,7 +297,7 @@ class _MusicListState extends State<MusicList> {
                                 ],
                               ),
                             ),
-                            SizedBox(height: 10),
+                            SizedBox(height: 15),
                             Expanded(
                               child: ListView.builder(
                                   padding: EdgeInsets.zero,
@@ -272,36 +309,21 @@ class _MusicListState extends State<MusicList> {
                                       newIndex = item.data![index];
                                       return GestureDetector(
                                         onTap: () {
-                                          // print(item.data![index].albumId);
-                                          print(MediaQuery.of(context)
-                                              .size
-                                              .height);
+                                            Navigator.push(context, MaterialPageRoute(builder: (context) =>
+                                            MusicPlayer(songModel: item.data![index], audioPlayer: _audioPlayer),
+                                              ),
+                                            );
                                         },
-                                        // child: ListTile(
-                                        //   tileColor: Colors.white,
-                                        //   title: Text(item.data![index].title),
-                                        //   subtitle: Text(item.data![index].artist!),
-                                        //   trailing: const Icon(Icons.more_vert),
-                                        //   leading: QueryArtworkWidget(
-                                        //     id: item.data![index].id,
-                                        //     nullArtworkWidget: Image.asset(
-                                        //       "assets/images/2pac.jpg",
-                                        //       fit: BoxFit.cover,
-                                        //       width: 50,
-                                        //       height: 50,
-                                        //     ),
-                                        //     type: ArtworkType.AUDIO,
-                                        //   ),
-                                        // ),
                                         child: Container(
                                           decoration: BoxDecoration(
                                               color: Colors.white),
                                           height: 90,
-                                          margin: EdgeInsets.only(bottom: 2),
+                                          margin: EdgeInsets.only(bottom: 5),
                                           padding: EdgeInsets.only(
                                             left: 10,
                                           ),
-                                          child: Row(children: [
+                                          child: Row(
+                                              children: [
                                             QueryArtworkWidget(
                                               artworkBorder: BorderRadius.zero,
                                               artworkWidth: 100,
@@ -326,7 +348,7 @@ class _MusicListState extends State<MusicList> {
                                                   Text(
                                                     item.data![index].title,
                                                     style: TextStyle(
-                                                        fontSize: 18,
+                                                        fontSize: 15,
                                                         color:
                                                             Color(0xFF660099),
                                                         fontWeight:
@@ -336,7 +358,7 @@ class _MusicListState extends State<MusicList> {
                                                   Text(
                                                     item.data![index].artist!,
                                                     style: TextStyle(
-                                                        fontSize: 16,
+                                                        fontSize: 13,
                                                         color:
                                                             Color(0xFF660099),
                                                         fontWeight:
@@ -347,7 +369,7 @@ class _MusicListState extends State<MusicList> {
                                             ),
                                             const Icon(Icons.more_vert),
                                             SizedBox(
-                                              width: 8,
+                                              width: 4,
                                             )
                                           ]),
                                         ),
