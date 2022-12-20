@@ -80,10 +80,6 @@ class _MusicPlayerState extends State<MusicPlayer> {
               Icons.music_note,
               size: 60.0,
             ),
-            // backgroundImage: widget.songModel.album == null
-            //   ? AssetImage('assets/images/music_gradient.jpg') as ImageProvider
-            // : FileImage(File(widget.songModel.displayName)),
-            // radius: 75,
           ),
           const SizedBox(
             height: 30,
@@ -150,7 +146,11 @@ class _MusicPlayerState extends State<MusicPlayer> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              IconButton(onPressed: (){},
+              IconButton(onPressed: (){
+                if (widget.audioPlayer.hasPrevious) {
+                  widget.audioPlayer.seekToPrevious();
+                }
+              },
                   icon: Icon(
                       Icons.skip_previous,
                       size: 55,
@@ -163,9 +163,13 @@ class _MusicPlayerState extends State<MusicPlayer> {
                     if (_isPlaying) {
                       widget.audioPlayer.pause();
                     } else {
-                      widget.audioPlayer.play();
+                      if (_position >= _duration) {
+                        changeToSeconds(0);
+                      } else {
+                        widget.audioPlayer.play();
+                      }
+                      _isPlaying = !_isPlaying;
                     }
-                    _isPlaying = !_isPlaying;
                   });
                 },
                 icon: Icon(
@@ -175,7 +179,11 @@ class _MusicPlayerState extends State<MusicPlayer> {
                     color: Colors.white,
                     size: 55),
               ),
-              IconButton(onPressed: (){},
+              IconButton(onPressed: (){
+                if (widget.audioPlayer.hasNext) {
+                  widget.audioPlayer.seekToNext();
+                }
+              },
                   icon: Icon(
                     Icons.skip_next,
                     size: 55,
@@ -193,5 +201,5 @@ class _MusicPlayerState extends State<MusicPlayer> {
     Duration duration = Duration(seconds: seconds);
     widget.audioPlayer.seek(duration);
   }
-  
+
 }
